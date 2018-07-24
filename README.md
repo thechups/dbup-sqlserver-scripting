@@ -1,4 +1,6 @@
 # DbUp SQL Server Object Scripting
+[![NuGet version](https://badge.fury.io/nu/dbup-sqlserver-scripting.svg)](https://badge.fury.io/nu/dbup-sqlserver-scripting)
+
 SQL Server object definition scripting for [DbUp](http://dbup.github.io/).  This package extends DbUp to provide SQL Server object definition scripting when running migrations from Visual Studio Package Manager Console.  When a database object changes during a migration, its latest definition will be saved in the project.  This allows you to have all of your database object definitions versioned in your repository and to easily compare the before/after diff of a definition changed by a migration (great for pull request / code reviews!).   
 
 ## Demo
@@ -67,6 +69,22 @@ The following SQL Server object types are currently supported:
 * Stored Procedures
 * User Defined Functions
 * Synonyms
+* User Defined Types
+
+## Statement Types
+The following list shows which statement types are currently supported:
+
+* CREATE
+* CREATE OR ALTER
+* ALTER
+* CREATE
+* CREATE IF EXISTS
+* Renaming with sp_rename
+
+## Known Issues
+* Renaming with sp_rename
+** Only the renaming of objects itself (like table, view, procedures, etc.) is supported, but not the renaming of columns, indexes, keys
+** When dropping or again renaming an object after it has been renamed with sp_rename, those objects can not be properly scripted
 
 ## Script All Definitions
 You can run `Start-DatabaseScript` from the Package Manager Console to script all objects in the database.  If working with an existing database, it is recommended to run this command initially so that all your definition files are saved.  

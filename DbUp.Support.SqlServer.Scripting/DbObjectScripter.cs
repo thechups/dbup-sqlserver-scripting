@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -449,7 +450,15 @@ namespace DbUp.Support.SqlServer.Scripting
             }
             catch (Exception ex)
             {
-                m_log.WriteError(string.Format("Error when scripting definition for {0}: {1}", dbObject.ObjectName, ex.Message));
+                m_log.WriteError(string.Format("Error when scripting definition for {0}.{1}: {2}", dbObject.ObjectSchema, dbObject.ObjectName, ex.Message));
+            }
+        }
+
+        private void WarnUndefinedObjects(IEnumerable<ScriptObject> dbObjects)
+        {
+            foreach (var dbObject in dbObjects)
+            {
+                m_log.WriteWarning(string.Format("The object {0}.{1} could not be scripted, since the object type was not identifyable. Normally this means, that the object has been dropped in the meantime. If necessary delete the file manually.", dbObject.ObjectSchema, dbObject.ObjectName));
             }
         }
 
@@ -464,6 +473,13 @@ namespace DbUp.Support.SqlServer.Scripting
                 {
                     sb.Append(str);
                     sb.Append(Environment.NewLine);
+                    
+                    if (this.m_options.ScriptBatchTerminator)
+                    {
+                        sb.Append("GO");
+                        sb.Append(Environment.NewLine);
+                        sb.Append(Environment.NewLine);
+                    }
                 }
 
                 m_log.WriteInformation(string.Format("Saving object definition: {0}", Path.Combine(outputDirectory, scriptObject.FileName)));

@@ -124,9 +124,7 @@ namespace DbUp
 	                scripter.StartWatch(); 
 
                     result = m_engine.PerformUpgrade();
-
-                    if (result.Successful
-                        && args.Any(a => "--fromconsole".Equals(a.Trim(), StringComparison.InvariantCultureIgnoreCase)))
+                    if (args.Any(a => "--fromconsole".Equals(a.Trim(), StringComparison.InvariantCultureIgnoreCase)))
                     {
                         this.Log.WriteInformation("Scripting changed database objects...");
 	                    scripter.ScriptWatched();
